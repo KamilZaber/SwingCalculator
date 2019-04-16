@@ -1,10 +1,13 @@
 import org.mariuszgromada.math.mxparser.Expression;
 
+import javax.swing.*;
+
 public class SwingCalc {
     public static void main(String args[]) {
-        double wynik;
-        Expression expression = new Expression("2+8");
-        System.out.println(expression.calculate());
-        new Frame();
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new Frame();
+            }
+        });
     }
 }
