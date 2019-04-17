@@ -1,5 +1,3 @@
-import org.mariuszgromada.math.mxparser.Expression;
-
 import javax.swing.*;
 
 public class SwingCalc {

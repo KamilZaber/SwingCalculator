@@ -4,9 +4,33 @@ import java.awt.Toolkit;
 import java.awt.FlowLayout;
 import java.awt.event.*;
 import javax.swing.DefaultListModel;
+import org.mariuszgromada.math.mxparser.Expression;
 
-public class Frame extends JFrame {
-    public Frame() {
+public class Frame extends JFrame implements ActionListener, MouseListener {
+    private DefaultListModel<MathFunction> elements;
+    private String lastexpr;
+
+    private MathFunction sqrt;
+    private MathFunction ln;
+    private MathFunction rad;
+    private MathFunction log;
+    private MathFunction mod;
+    private MathFunction round;
+    private MathFunction pi;
+    private MathFunction e;
+    private MathFunction ks;
+
+    private JMenuBar menubar;
+    private JMenu options;
+    private JMenuItem reset;
+    private JMenuItem exit;
+    private JTextArea history;
+    private JScrollPane historyscroll;
+    private JList<MathFunction> functions;
+    private JTextField expression;
+    private JButton evaluate;
+
+    public Frame(){
         super("Kalkulator");
 
         Dimension d=Toolkit.getDefaultToolkit().getScreenSize();      //pobieranie rozmiaru ekranu do obiektu Dimension, przechowujacego rozmiar obiektu w polach height width
@@ -18,18 +42,17 @@ public class Frame extends JFrame {
         setResizable(false);
         setLayout(null);
 
-        DefaultListModel<MathFunction> elements = new DefaultListModel<MathFunction>();
-        String lastexpr;
+        elements = new DefaultListModel<MathFunction>();
 
-        MathFunction sqrt = new MathFunction("pierwiastek", "sqrt()");
-        MathFunction ln = new MathFunction("logarytm naturalny","ln()");
-        MathFunction rad = new MathFunction("radian","rad()");
-        MathFunction log = new MathFunction("logarytm","log()");
-        MathFunction mod = new MathFunction("reszta","mod()");
-        MathFunction round = new MathFunction("zaokraglenie","round()");
-        MathFunction pi = new MathFunction("Archimedes","pi");
-        MathFunction e = new MathFunction("Euler","e");
-        MathFunction ks = new MathFunction("Sierpinski","[Ks]");
+        sqrt = new MathFunction("pierwiastek", "sqrt()");
+        ln = new MathFunction("logarytm naturalny","ln()");
+        rad = new MathFunction("radian","rad()");
+        log = new MathFunction("logarytm","log()");
+        mod = new MathFunction("reszta","mod()");
+        round = new MathFunction("zaokraglenie","round()");
+        pi = new MathFunction("Archimedes","pi");
+        e = new MathFunction("Euler","e");
+        ks = new MathFunction("Sierpinski","[Ks]");
 
         elements.addElement(sqrt);
         elements.addElement(ln);
@@ -41,37 +64,30 @@ public class Frame extends JFrame {
         elements.addElement(e);
         elements.addElement(ks);
 
-        JMenuBar menubar = new JMenuBar();
-        JMenu options = new JMenu("Opcje");
-        JMenuItem reset = new JMenuItem("Resetuj");
-        JMenuItem exit = new JMenuItem("Wyjdź");
-        JTextArea history = new JTextArea();
-        JScrollPane historyscroll = new JScrollPane(history);
-        final JList<MathFunction> functions = new JList(elements);
-        final JTextField expression = new JTextField();
-        JButton evaluate = new JButton("Oblicz!");
+        menubar = new JMenuBar();
+        options = new JMenu("Opcje");
+        reset = new JMenuItem("Resetuj");
+        exit = new JMenuItem("Wyjdź");
+        history = new JTextArea();
+        historyscroll = new JScrollPane(history);
+        functions = new JList(elements);
+        expression = new JTextField();
+        evaluate = new JButton("Oblicz!");
 
         functions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         history.setEditable(false);
 
-        functions.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent click) {
-                if(click.getClickCount() == 2) {
-                    expression.setText(functions.getSelectedValue().getParsable());
-                }
-            }
-        });
-
-        evaluate.addActionListener(new Action);
-
-        options.add(reset);
-        options.add(exit);
-        menubar.add(options);
+        functions.addMouseListener(this);
+        evaluate.addActionListener(this);
 
         historyscroll.setBounds(5,5,660,485);
         functions.setBounds(675,5,112,485);
         expression.setBounds(5,500,660,35);
         evaluate.setBounds(675,500,112,35);
+
+        options.add(reset);
+        options.add(exit);
+        menubar.add(options);
 
         setJMenuBar(menubar);
         add(historyscroll);
@@ -79,13 +95,33 @@ public class Frame extends JFrame {
         add(evaluate);
         add(expression);
 
-
-        /*
-        double wynik;
-        Expression expression = new Expression("2+8");
-        System.out.println(expression.calculate());
-         */
-
         setVisible(true);
+    }
+
+    public void mouseClicked(MouseEvent click) {
+        if(click.getClickCount() == 2) {
+            expression.setText(functions.getSelectedValue().getParsable());
+        }
+    }
+
+    public void actionPerformed(ActionEvent click) {
+        Expression exp = new Expression(expression.getText());
+        history.setText(Double.toString(exp.calculate()));
+    }
+
+    public void mouseExited(MouseEvent click) {
+
+    }
+
+    public void mouseEntered(MouseEvent click) {
+
+    }
+
+    public void mouseReleased(MouseEvent click) {
+
+    }
+
+    public void mousePressed(MouseEvent click) {
+
     }
 }
