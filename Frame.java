@@ -35,7 +35,7 @@ public class Frame extends JFrame implements ActionListener, MouseListener, KeyL
     public Frame(){
         super("Kalkulator");
 
-        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();      //pobieranie rozmiaru ekranu do obiektu Dimension, przechowujacego rozmiar obiektu w polach height width
+        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
