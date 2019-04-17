@@ -6,9 +6,10 @@ import java.awt.event.*;
 import javax.swing.DefaultListModel;
 import org.mariuszgromada.math.mxparser.Expression;
 
-public class Frame extends JFrame implements ActionListener, MouseListener {
-    private DefaultListModel<MathFunction> elements;
+public class Frame extends JFrame implements ActionListener, MouseListener, KeyListener {
+    private DefaultListModel<MathFunction> model;
     private String lastexpr;
+    private String lastresult;
 
     private MathFunction sqrt;
     private MathFunction ln;
@@ -19,6 +20,7 @@ public class Frame extends JFrame implements ActionListener, MouseListener {
     private MathFunction pi;
     private MathFunction e;
     private MathFunction ks;
+    private MathFunction last;
 
     private JMenuBar menubar;
     private JMenu options;
@@ -42,7 +44,7 @@ public class Frame extends JFrame implements ActionListener, MouseListener {
         setResizable(false);
         setLayout(null);
 
-        elements = new DefaultListModel<MathFunction>();
+        model = new DefaultListModel<MathFunction>();
 
         sqrt = new MathFunction("pierwiastek", "sqrt()");
         ln = new MathFunction("logarytm naturalny","ln()");
@@ -53,16 +55,18 @@ public class Frame extends JFrame implements ActionListener, MouseListener {
         pi = new MathFunction("Archimedes","pi");
         e = new MathFunction("Euler","e");
         ks = new MathFunction("Sierpinski","[Ks]");
+        last = new MathFunction("ostatni wynik","last");
 
-        elements.addElement(sqrt);
-        elements.addElement(ln);
-        elements.addElement(rad);
-        elements.addElement(log);
-        elements.addElement(mod);
-        elements.addElement(round);
-        elements.addElement(pi);
-        elements.addElement(e);
-        elements.addElement(ks);
+        model.addElement(sqrt);
+        model.addElement(ln);
+        model.addElement(rad);
+        model.addElement(log);
+        model.addElement(mod);
+        model.addElement(round);
+        model.addElement(pi);
+        model.addElement(e);
+        model.addElement(ks);
+        model.addElement(last);
 
         menubar = new JMenuBar();
         options = new JMenu("Opcje");
@@ -70,7 +74,7 @@ public class Frame extends JFrame implements ActionListener, MouseListener {
         exit = new JMenuItem("Wyjdź");
         history = new JTextArea();
         historyscroll = new JScrollPane(history);
-        functions = new JList(elements);
+        functions = new JList(model);
         expression = new JTextField();
         evaluate = new JButton("Oblicz!");
 
@@ -79,6 +83,8 @@ public class Frame extends JFrame implements ActionListener, MouseListener {
 
         functions.addMouseListener(this);
         evaluate.addActionListener(this);
+        expression.addActionListener(this);
+        expression.addKeyListener(this);
 
         historyscroll.setBounds(5,5,660,485);
         functions.setBounds(675,5,112,485);
@@ -99,14 +105,21 @@ public class Frame extends JFrame implements ActionListener, MouseListener {
     }
 
     public void mouseClicked(MouseEvent click) {
+        MathFunction f;
+        String toparse;
         if(click.getClickCount() == 2) {
-            expression.setText(functions.getSelectedValue().getParsable());
+            f = functions.getSelectedValue();
+            toparse = f.getParsable();
+            if(toparse == "last") {
+                expression.setText(lastresult);
+            }else {
+                expression.setText(toparse);
+                if(functions.getSelectedIndex()<=6) {
+                    expression.setCaretPosition(toparse.length() - 1);
+                }
+            }
         }
-    }
-
-    public void actionPerformed(ActionEvent click) {
-        Expression exp = new Expression(expression.getText());
-        history.setText(Double.toString(exp.calculate()));
+        expression.requestFocus();
     }
 
     public void mouseExited(MouseEvent click) {
@@ -123,5 +136,24 @@ public class Frame extends JFrame implements ActionListener, MouseListener {
 
     public void mousePressed(MouseEvent click) {
 
+    }
+
+    public void actionPerformed(ActionEvent process) {
+        lastexpr = expression.getText();
+        Expression exp = new Expression(lastexpr);
+        lastresult = Double.toString(exp.calculate());
+        history.setText(lastresult);
+    }
+
+    public void keyPressed(KeyEvent pressed) {
+        if(pressed.getKeyCode() == KeyEvent.VK_UP) {
+            expression.setText(lastexpr);
+        }
+    }
+
+    public void keyReleased(KeyEvent released) {
+    }
+
+    public void keyTyped(KeyEvent typed) {
     }
 }
